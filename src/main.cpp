@@ -196,7 +196,12 @@ int main(int argc, char **argv)
 		// load message
 		if(vm.count("pipe"))
 		{
-			while(cin >> message) {};
+			string pipeBuffer;
+
+			while(cin >> pipeBuffer) 
+			{
+				message += pipeBuffer;
+			}
 		}
 		else
 		{
