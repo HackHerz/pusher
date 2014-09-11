@@ -11,6 +11,7 @@
 * curl `libcurl4-gnutls-dev`
 
 ## Compile
+First you do have to change `API_TOKEN` in src/pushhandler.h. You can receive your API-Token at [a.gidix.de](http://www.a.gidix.de/). Don't forget to match the APP-Package as well.
 
     chmod +x configure
     ./configure

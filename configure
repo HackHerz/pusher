@@ -2979,6 +2979,20 @@ fi
 
 done
 
+	for ac_header in boost/regex.hpp
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "boost/regex.hpp" "ac_cv_header_boost_regex_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_regex_hpp" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_BOOST_REGEX_HPP 1
+_ACEOF
+
+else
+  as_fn_error $? "You need the Boost Regex library." "$LINENO" 5
+fi
+
+done
+
 	for ac_header in curl/curl.h
 do :
   ac_fn_cxx_check_header_mongrel "$LINENO" "curl/curl.h" "ac_cv_header_curl_curl_h" "$ac_includes_default"
