@@ -53,12 +53,12 @@ int main(int argc, char **argv)
 	
 	desc.add_options()
 		("help,h", "Print help message")
-		("token,t", "Request your token")	// TODO
-		("list,l", "List of all your devices")	// TODO
-		("pipe,p", "Input via pipe")	// TODO
-		("quiet,q", "Outputs are redirected to syslog") // TODO
-		("verify,v", "Checks if token is still valid") // TODO
-		("id,i", po::value<int>(), "Specify device ID"); // TODO
+		("token,t", "Request your token")
+		("list,l", "List of all your devices")
+		("pipe,p", "Input via pipe")
+	//	("quiet,q", "Outputs are redirected to syslog") // TODO
+		("verify,v", "Checks if token is still valid")
+		("id,i", po::value<int>(), "Specify device ID");
 
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
 		// load message
 		if(vm.count("pipe"))
 		{
-			message = "pipe";
+			while(cin >> message) {};
 		}
 		else
 		{
@@ -204,8 +204,6 @@ int main(int argc, char **argv)
 			lastArgument << argv[argc-1];
 
 			message = lastArgument.str();
-
-			cout << message << endl;
 		}
 
 
