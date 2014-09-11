@@ -24,6 +24,7 @@ AC_LANG_PUSH([C++])
 	AC_CHECK_HEADERS([boost/property_tree/ptree.hpp], [], [AC_MSG_ERROR(You need the Boost libraries.)])
 	AC_CHECK_HEADERS([boost/property_tree/ini_parser.hpp], [], [AC_MSG_ERROR(You need the Boost libraries.)])
 	AC_CHECK_HEADERS([boost/program_options.hpp], [], [AC_MSG_ERROR(You need the Boost Program Options library.)])
+	AC_CHECK_HEADERS([boost/regex.hpp], [], [AC_MSG_ERROR(You need the Boost Regex library.)])
 	AC_CHECK_HEADERS([curl/curl.h], [], [AC_MSG_ERROR(You need the curl libraries.)])
 AC_LANG_POP([C++])
 

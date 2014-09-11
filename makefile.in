@@ -7,6 +7,7 @@ CFLAGS += -std=c++11
 # librarys
 LDLIBS = -lcurl
 LDLIBS += -lboost_program_options
+LDLIBS += -lboost_regex
 
 
 # details

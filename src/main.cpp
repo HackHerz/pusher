@@ -198,9 +198,10 @@ int main(int argc, char **argv)
 		{
 			string pipeBuffer;
 
-			while(cin >> pipeBuffer) 
+			while(getline(cin, pipeBuffer)) 
 			{
 				message += pipeBuffer;
+				message += "\n";
 			}
 		}
 		else

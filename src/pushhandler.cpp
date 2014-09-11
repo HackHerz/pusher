@@ -6,10 +6,38 @@
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/regex.hpp>
 
-#include <iostream>
 
 using namespace std;
+
+
+// urlDecode matches
+const char* matches[][2] = {
+{"\\$", "%24"},
+{"\\&", "%26"},
+{"\\+", "%2B"},
+{"\\,", "%2C"},
+{"\\/", "%2F"},
+{"\\:", "%3A"},
+{"\\;", "%3B"},
+{"\\=", "%3D"},
+{"\\?", "%3F"},
+{"\\@", "%40"}
+};
+
+// neded for urlencoding
+string urlDecode(string url)
+{
+	for(unsigned int i = 0; i < (sizeof(matches)/sizeof(matches[0])); i++)
+	{
+		boost::regex reg(matches[i][0]);
+		url = boost::regex_replace(url, reg, matches[i][1]);
+	}
+
+	return url;
+}
+
 
 // needed for handling curl output
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -191,7 +219,7 @@ void PushHandler::sendToDevice(int id, string message)
 		% APP_PACKAGE
 		% id
 		% "MESSAGE"
-		% message;
+		% urlDecode(message);
 
 	// network request
 	string readBuffer;

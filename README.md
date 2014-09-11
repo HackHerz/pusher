@@ -5,8 +5,8 @@
 # Building
 ## Requirements
 
-* boost `libboost-program-options-dev`
-* curl `libcurl4-gnutls-dev`
+* boost
+* curl
 
 ## Compile
 
