@@ -5,8 +5,10 @@
 # Building
 ## Requirements
 
-* boost
-* curl
+* boost `libboost-dev`
+* boost regex `libboost-regex-dev`
+* boost program options `libboost-program-options-dev`
+* curl `libcurl4-gnutls-dev`
 
 ## Compile
 
