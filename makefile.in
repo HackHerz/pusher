@@ -1,7 +1,7 @@
 # compiler
 CXX = @CXX@
-CFLAGS = -Wall -Werror
-CFLAGS += -std=c++11
+#CFLAGS = -Wall -Werror
+#CFLAGS += -std=c++11
 
 
 # librarys
@@ -20,10 +20,10 @@ $(TARGET):
 	$(CXX) -o $(TARGET) $(CFLAGS) $(SOURCES) $(LDLIBS)
 
 install: $(TARGET)
-	mv $(TARGET) /usr/bin
+	mv $(TARGET) @prefix@/bin
 
 remove:
-	rm -f /usr/bin/$(TARGET)
+	rm -f @prefix@/bin/$(TARGET)
 
 clean:
 	rm -f $(TARGET)
