@@ -33,9 +33,9 @@ namespace po = boost::program_options;
 
 
 // number of digit
-int numDigits(int number)
+unsigned int numDigits(int number)
 {
-	int digits = 0;
+	unsigned int digits = 0;
 	while(number != 0) 
 	{
 		number /= 10;
@@ -150,11 +150,11 @@ int main(int argc, char **argv)
 			vector<PushHandler::Device> devices;
 			devices = pusherInstance.getDevices();
 
-			int titleLength = 5;
-			int modelLength = 5;
-			int idLength = 2;
+			unsigned int titleLength = 5;
+			unsigned int modelLength = 5;
+			unsigned int idLength = 2;
 
-			for(int i = 0; i < devices.size(); i++)
+			for(unsigned int i = 0; i < devices.size(); i++)
 			{
 				if(devices[i].title.length() > titleLength) { titleLength = devices[i].title.length(); }
 				if(devices[i].model.length() > modelLength) { modelLength = devices[i].model.length(); }
@@ -166,10 +166,10 @@ int main(int argc, char **argv)
 				<< "Title\033[" << (titleLength - 5 + 2) << "C"
 				<< "Model" << endl;
 
-			for(int x = 0; x < (titleLength + modelLength + idLength + 4); x++) { cout << "-"; }
+			for(unsigned int x = 0; x < (titleLength + modelLength + idLength + 4); x++) { cout << "-"; }
 			cout << endl;
 
-			for(int i = 0; i < devices.size(); i++)
+			for(unsigned int i = 0; i < devices.size(); i++)
 			{
 				cout 
 					<< devices[i].id << "\033[" << (idLength - numDigits(devices[i].id) + 2) << "C"
