@@ -1,0 +1,29 @@
+# compiler
+CXX = @CXX@
+CFLAGS = -Wall -Werror
+CFLAGS += -std=c++11
+
+
+# librarys
+LDLIBS = -lcurl
+LDLIBS += -lboost_program_options
+
+
+# details
+SOURCES = src/*.cpp
+TARGET = @PACKAGE_NAME@
+
+
+
+$(TARGET):
+	$(CXX) -o $(TARGET) $(CFLAGS) $(SOURCES) $(LDLIBS)
+
+install: $(TARGET)
+	mv $(TARGET) /usr/bin
+
+remove:
+	rm -f /usr/bin/$(TARGET)
+
+clean:
+	rm -f $(TARGET)
+	rm -f makefile
