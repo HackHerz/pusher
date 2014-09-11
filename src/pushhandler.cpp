@@ -205,7 +205,7 @@ void PushHandler::sendToDevice(int id, string message)
 	boost::property_tree::read_json(jsonData, pt);
 
 
-	switch(pt.get<int>("id"))
+	switch(pt.get<int>("code"))
 	{
 	case 0: //return 0;
 	break;
