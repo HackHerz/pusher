@@ -16,6 +16,7 @@ Send push-notifications to your phone from the command line. Uses [PushNotifier]
 You can download debian packages from [my website](http://hackherz.com/pusher#download).
 
 ### Option 2: From source
+Make sure you have **libcurl4-openssl-dev** installed.
 ```bash
 $ git clone https://github.com/HackHerz/pusher.git
 $ cd pusher/
