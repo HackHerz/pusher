@@ -1,4 +1,4 @@
-<div style="text-align:center">![](http://hackherz.com/wp-content/uploads/2014/09/Pusher-UNIX.png)</div>
+![Logo](http://hackherz.com/wp-content/uploads/2014/09/Pusher-UNIX.png)
 
 # pusher
 Send push-notifications to your phone from the command line. Uses [PushNotifier](http://pushnotifier.de/) to receive notifications.
@@ -59,14 +59,14 @@ Please use the [issue tracker](https://github.com/HackHerz/pusher/issues) to rep
 
 #### Developing
 Just file a pull request and start coding.
+If you want to develop your own software with code from pusher, make sure that you are using your own [API-Token](http://a.gidix.de/). You have to change it in pushhandler.h
 
-
-### Keeping me motivated
-If you want to ensure that I'll continue developing just send me a tweet [@hackherz](https://twitter.com/hackherz) why you like or use my software :).
+### Keep me motivated
+If you want to make sure that I'll continue developing just send me a tweet [@hackherz](https://twitter.com/hackherz) why you like or use my software :).
 
 
 ## Libraries
-pusher uses a few third party libraries. They are all MIT-Licensed but they are so awesome I have to mention them.
+pusher uses a few third party libraries.
 
 - [json](https://github.com/nlohmann/json) by [Niels Lohmann](http://nlohmann.me/)
 - [TCLAP](http://tclap.sourceforge.net/)
