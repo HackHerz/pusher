@@ -1,12 +1,11 @@
 /*
  * pusher
- * (c) 2014 Daniel Stein
- * github link..
+ * (c) 2014-2015 Daniel Stein
+ * https://github.com/HackHerz/pusher
  *
  * TODO
  * syslog
  * content type detection
- * gitignore of lines
  * secret input of password
  */
 
@@ -14,122 +13,153 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <termios.h>
+#include <unistd.h>
 
-// Boost
-#include <boost/program_options.hpp>
-#include <boost/format.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
-
-// own header files
+#include "tclap/CmdLine.h"
+#include "simpleini/SimpleIni.h"
 #include "pushhandler.h"
-
 
 #define CONFIG_FILE "/etc/pusher.conf"
 
 // namespaces
 using namespace std;
-namespace po = boost::program_options;
 
 
-// number of digit
-unsigned int numDigits(int number)
+void HideStdinKeystrokes()
 {
-	unsigned int digits = 0;
-	while(number != 0) 
-	{
-		number /= 10;
-		digits++;
-	}
-	return digits;
+	termios tty;
+	tcgetattr(STDIN_FILENO, &tty);
+	tty.c_lflag &= ~ECHO; // Disable echo
+	tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 }
 
+void ShowStdinKeystrokes()
+{
+	termios tty;
+	tcgetattr(STDIN_FILENO, &tty);
+	tty.c_lflag |= ECHO; // enable echo
+	tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+}
 
-// main
+// Main
 int main(int argc, char **argv)
 {
-
-	po::options_description desc("Allowed options");
-	
-	desc.add_options()
-		("help,h", "Print help message")
-		("token,t", "Request your token")
-		("list,l", "List of all your devices")
-		("pipe,p", "Input via pipe")
-	//	("quiet,q", "Outputs are redirected to syslog") // TODO
-		("verify,v", "Checks if token is still valid")
-		("id,i", po::value<int>(), "Specify device ID");
-
-	po::variables_map vm;
-	po::store(po::parse_command_line(argc, argv, desc), vm);
+	// Check the number of command line arguments
+	if(argc < 2)
+	{
+		cout << "Try " << argv[0] << " -h or --help" << endl;
+		return 1;
+	}
 
 	try
 	{
+		TCLAP::CmdLine cmd("Push notifications to your phone easily.", ' ', "0.3");
+
+		// Values
+		TCLAP::ValueArg<int> idArg("i","id","ID of the device.",false,0,"number");
+		cmd.add(idArg);
+
+		// Switches
+		TCLAP::SwitchArg tokenSwitch("t", "token", "Request your token.", cmd, false);
+		TCLAP::SwitchArg listSwitch("l", "list", "List all your devices.", cmd, false);
+		TCLAP::SwitchArg pipeSwitch("p", "pipe", "Input via pipe.", cmd, false);
+		TCLAP::SwitchArg verifySwitch("v","verify","Checks if token is still valid.", cmd, false);
+
+
+		// add unlabeled argument
+		TCLAP::UnlabeledValueArg<string> noLabelMessage("message", "The notification you want to send.", false, "message", "message");
+		cmd.add(noLabelMessage);
+
+
+    	// Parse the argv array.
+    	cmd.parse(argc, argv);
+
+
+		// Variables
 		string message;
 		int id;
 
-
-		// help
-		if(vm.count("help"))
+		// Request token
+		if(tokenSwitch.getValue())
 		{
-			cout << desc << endl;
-			return 0;
-		}
-
-
-		// request token
-		if(vm.count("token"))
-		{
-			//request token
 			string username, password, token;
-			
+
+			// Read username
 			cout << "Username: ";
 			cin >> username;
 
-			cout << "Password: ";
-			cin >> password;
+			cin.clear();
+			cin.ignore(1024,'\n');
 
+			// Read password
+			cout << "Password: ";
+
+			HideStdinKeystrokes();
+			getline(cin, password);
+			ShowStdinKeystrokes();
+			cout << endl;
+
+			// pusher instance
 			PushHandler buf(username);
 			token = buf.login(password);
 
-			// generate config file
-			stringstream conffile;
-			conffile << boost::format("[pusher]\nusername=%1%\nappToken=%2%")
-				% username
-				% token;
 
-			// attempt to save token
+			// Write config
 			ofstream dat_aus;
 			dat_aus.open(CONFIG_FILE, ios_base::out);
 
+			// Check if file is writable
 			if(!dat_aus.is_open())
 			{
-				cout << "Try running pusher as root or save the following in " << CONFIG_FILE << "\n" << endl;
-				cout << conffile.str() << endl;
+				cout << "Try running pusher as root or save the following in "
+					<< CONFIG_FILE << "\n" << endl;
+
+				// Data
+				cout << "[pusher]" << endl;
+				cout << "username=" << username << endl;
+				cout << "appToken=" << token << endl;
+
 				return 1;
 			}
+			else
+			{
+				cout << "Success!" << endl;
+			}
 
-			// save
-			dat_aus << conffile.str();
+			// Data
+			dat_aus << "[pusher]\n";
+			dat_aus << "username=" << username << "\n";
+			dat_aus << "appToken=" << token;
+
 			dat_aus.close();
 
 			return 0;
 		}
 
 
-		// load conf and check if token is specified
-		boost::property_tree::ptree pt;
-		boost::property_tree::ini_parser::read_ini(CONFIG_FILE, pt);
-		string username = pt.get<std::string>("pusher.username");
-		string appToken = pt.get<std::string>("pusher.appToken");
+		// Load conf and check if token is specified
+		CSimpleIniA iniReader;
+		iniReader.SetUnicode();
+
+		// Check if reading is possible
+		if(iniReader.LoadFile(CONFIG_FILE) < 0)
+		{
+			cout << "Error" << endl;
+			return 1;
+		}
+
+		string username = iniReader.GetValue("pusher", "username", NULL);
+		string appToken = iniReader.GetValue("pusher", "appToken", NULL);
 
 
-		// loading values
+		// Loading values
 		PushHandler pusherInstance(username, appToken);
 
 
-		// verify token
-		if(vm.count("verify"))
+
+		// Verify token
+		if(verifySwitch.getValue())
 		{
 			if(pusherInstance.verifyToken())
 			{
@@ -144,8 +174,9 @@ int main(int argc, char **argv)
 		}
 
 
-		// list devices
-		if(vm.count("list"))
+
+		// List devices
+		if(listSwitch.getValue())
 		{
 			vector<PushHandler::Device> devices;
 			devices = pusherInstance.getDevices();
@@ -158,7 +189,7 @@ int main(int argc, char **argv)
 			{
 				if(devices[i].title.length() > titleLength) { titleLength = devices[i].title.length(); }
 				if(devices[i].model.length() > modelLength) { modelLength = devices[i].model.length(); }
-				if(numDigits(devices[i].id) > idLength) { idLength = numDigits(devices[i].id); }
+				if(devices[i].id.length() > idLength) { idLength = devices[i].id.length(); }
 			}
 
 			cout 
@@ -172,7 +203,7 @@ int main(int argc, char **argv)
 			for(unsigned int i = 0; i < devices.size(); i++)
 			{
 				cout 
-					<< devices[i].id << "\033[" << (idLength - numDigits(devices[i].id) + 2) << "C"
+					<< devices[i].id << "\033[" << (idLength - devices[i].id.length() + 2) << "C"
 					<< devices[i].title << "\033[" << (titleLength - devices[i].title.length() + 2) << "C" 
 					<< devices[i].model << endl;
 			}
@@ -181,58 +212,59 @@ int main(int argc, char **argv)
 		}
 
 
-		// device id
-		if(vm.count("id"))
+
+		// Device id
+		if(idArg.getValue() != 0)
 		{
-			id = vm["id"].as<int>();
+			id = idArg.getValue();
 		}
 		else
 		{
-			cout << desc << endl;
 			return 1;
 		}
 
 
-		// load message
-		if(vm.count("pipe"))
+
+		// Load message
+		if(pipeSwitch.getValue())
 		{
 			string pipeBuffer;
 
-			while(getline(cin, pipeBuffer)) 
+			while(getline(cin, pipeBuffer))
 			{
-				message += pipeBuffer;
 				message += "\n";
+				message += pipeBuffer;
 			}
+
+			message.erase(0,1);
 		}
 		else
 		{
-			stringstream lastArgument;
-			lastArgument << argv[argc-1];
-
-			message = lastArgument.str();
+			message = noLabelMessage.getValue();
 		}
 
+		// Send the message
+		stringstream stringID;
+		stringID << id;
 
-		// send the message
-		pusherInstance.sendToDevice(id, message);
+		pusherInstance.sendToDevice(stringID.str(), message);
 	}
 
 
 	/* ERROR HANDLING */
 
 
+	// Command line parsing exception
+	catch (TCLAP::ArgException &e)
+	{
+		cerr << "error: " << e.error() << " for arg " << e.argId() << endl;
+	}
+
+	
 	// errors thrown by pushhandler
 	catch(PusherError& e)
 	{
 		cout << "Error: " << e.what() << endl;
-	}
-
-
-	// boos ptree 
-	catch(const boost::property_tree::ptree_error &e)
-	{
-		cout << "Maybe you need to request your appToken first?\n" << endl;
-		cout << e.what() << "\n" << desc << endl;
 	}
 
 

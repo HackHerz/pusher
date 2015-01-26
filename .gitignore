@@ -1,5 +1,9 @@
-# executable
 pusher
-
-# makefile
-makefile
+*~
+*.o
+*.txt
+*.deb
+*cmake*
+*cpack*
+CMake*
+_CPack*

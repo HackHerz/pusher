@@ -4,8 +4,14 @@
 #include <string>
 #include <vector>
 
-
-#define API_TOKEN "1234" // change this line
+// Change this line if you are using your own API-Token
+const char API_TOKEN[] = {
+	0x38, 0x45, 0x37, 0x44, 0x38, 0x42, 0x32, 
+	0x44, 0x44, 0x45, 0x37, 0x44, 0x44, 0x45,
+	0x37, 0x44, 0x36, 0x43, 0x33, 0x56, 0x35,
+	0x32, 0x56, 0x42, 0x35, 0x32, 0x56, 0x42,
+	0x44, 0x34, 0x44, 0x44, 0x45, 0x54, 0x42,
+	0x54, 0x54, 0x54, 0x4b, 0x46, 0x46, 0x42 };
 
 #define APP_PACKAGE "com.hackherz.pusher"
 #define USER_AGENT "pusher/0.2"
@@ -27,14 +33,14 @@ public:
 	typedef struct
 	{
 		std::string title;
-		int id;
+		std::string id;
 		std::string model;
 	} Device;
 
 
 	std::string login(std::string password);
 	std::vector<Device> getDevices();
-	void sendToDevice(int deviceID, std::string message);
+	void sendToDevice(std::string deviceID, std::string message);
 	bool verifyToken();
 
 

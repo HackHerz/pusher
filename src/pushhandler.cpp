@@ -1,38 +1,41 @@
 #include "pushhandler.h"
+#include "json/json.h"
+
 
 #include <sstream>
+#include <algorithm>
 #include <curl/curl.h>
-#include <boost/format.hpp>
-#include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/regex.hpp>
 
 
 using namespace std;
+using json = nlohmann::json;
 
 
 // urlDecode matches
-const char* matches[][2] = {
-{"\\$", "%24"},
-{"\\&", "%26"},
-{"\\+", "%2B"},
-{"\\,", "%2C"},
-{"\\/", "%2F"},
-{"\\:", "%3A"},
-{"\\;", "%3B"},
-{"\\=", "%3D"},
-{"\\?", "%3F"},
-{"\\@", "%40"}
+string matches[][2] = {
+	{"$", "%24"},
+	{"&", "%26"},
+	{"+", "%2B"},
+	{",", "%2C"},
+	{"/", "%2F"},
+	{":", "%3A"},
+	{";", "%3B"},
+	{"=", "%3D"},
+	{"?", "%3F"},
+	{"@", "%40"}
 };
 
-// neded for urlencoding
+// needed for urlencoding
 string urlDecode(string url)
 {
 	for(unsigned int i = 0; i < (sizeof(matches)/sizeof(matches[0])); i++)
 	{
-		boost::regex reg(matches[i][0]);
-		url = boost::regex_replace(url, reg, matches[i][1]);
+		size_t start_pos = 0;
+		while((start_pos = url.find(matches[i][0], start_pos)) != string::npos)
+		{
+			url.replace(start_pos, matches[i][0].length(), matches[i][1]);
+			start_pos += matches[i][1].length();
+		}
 	}
 
 	return url;
@@ -71,7 +74,6 @@ string curlHandler(string data, const char* url)
 		}
 	}
 
-
 	return readBuffer;
 }
 
@@ -96,10 +98,9 @@ string PushHandler::login(string password)
 {
 	// build request data
 	stringstream requestData;
-	requestData << boost::format("apiToken=%1%&username=%2%&password=%3%") 
-		% API_TOKEN 
-		% this->username 
-		% password;
+	requestData << "apiToken=" << API_TOKEN;
+	requestData << "&username=" << this->username;
+	requestData << "&password=" << password;
 
 	// network request
 	string readBuffer;
@@ -109,15 +110,15 @@ string PushHandler::login(string password)
 	stringstream jsonData;
 	jsonData << readBuffer;
 
-	boost::property_tree::ptree pt;
-	boost::property_tree::read_json(jsonData, pt);
+	json j;
+	j << jsonData;
 
-	if(pt.get<string>("status") != "ok")
+	if(j["status"].get<string>() != "ok")
 	{
 		throw PusherError("wrong credentials");
 	}
 
-	this->appToken = pt.get<string>("appToken");
+	this->appToken = j["appToken"].get<string>();
 	return this->appToken;
 }
 
@@ -127,9 +128,8 @@ vector<PushHandler::Device> PushHandler::getDevices()
 {
 	// build request data
 	stringstream requestData;
-	requestData << boost::format("apiToken=%1%&appToken=%2%")
-		% API_TOKEN
-		% this->appToken;
+	requestData << "apiToken=" << API_TOKEN;
+	requestData << "&appToken=" << this->appToken;
 
 	// network request
 	string readBuffer;
@@ -139,11 +139,11 @@ vector<PushHandler::Device> PushHandler::getDevices()
 	stringstream jsonData;
 	jsonData << readBuffer;
 
-	boost::property_tree::ptree pt;
-	boost::property_tree::read_json(jsonData, pt);
+	json j;
+	j << jsonData;
 
 	// handle the codes
-	switch(pt.get<int>("code"))
+	switch(j["code"].get<int>())
 	{
 	case 1: throw PusherError("Invalid API Token");
 	break;
@@ -154,14 +154,14 @@ vector<PushHandler::Device> PushHandler::getDevices()
 
 	vector<Device> buffer;
 
-	 BOOST_FOREACH(boost::property_tree::ptree::value_type& v, pt.get_child("devices"))
-	 {
-	 	Device buf;
+	for(auto element : j["devices"])
+	{
+		Device buf;
 
-		buf.title = v.second.get<string>("title");
-		buf.id = v.second.get<int>("id");
-		buf.model = v.second.get<string>("model");
-	
+		buf.title = element["title"].get<string>();
+		buf.id = element["id"].get<string>();
+		buf.model = element["model"].get<string>();
+
 		buffer.push_back(buf);
 	}
 
@@ -174,10 +174,9 @@ bool PushHandler::verifyToken()
 {
 	// build request data
 	stringstream requestData;
-	requestData << boost::format("apiToken=%1%&username=%2%&appToken=%3%")
-		% API_TOKEN
-		% this->username
-		% this->appToken;
+	requestData << "apiToken=" << API_TOKEN;
+	requestData << "&username=" << this->username;
+	requestData << "&appToken=" << this->appToken;
 
 	// network request
 	string readBuffer;
@@ -187,11 +186,10 @@ bool PushHandler::verifyToken()
 	stringstream jsonData;
 	jsonData << readBuffer;
 
-	boost::property_tree::ptree pt;
-	boost::property_tree::read_json(jsonData, pt);
+	json j;
+	j << jsonData;
 
-
-	switch(pt.get<int>("code"))
+	switch(j["code"].get<int>())
 	{
 	case 0: return true;
 	break;
@@ -204,7 +202,7 @@ bool PushHandler::verifyToken()
 
 
 // send to device
-void PushHandler::sendToDevice(int id, string message)
+void PushHandler::sendToDevice(string id, string message)
 {
 	// analyze content-type
 	// ......
@@ -213,13 +211,12 @@ void PushHandler::sendToDevice(int id, string message)
 	// actual sending
 	// build request data
 	stringstream requestData;
-	requestData << boost::format("apiToken=%1%&appToken=%2%&app=%3%&deviceID=%4%&type=%5%&content=%6%")
-		% API_TOKEN
-		% this->appToken
-		% APP_PACKAGE
-		% id
-		% "MESSAGE"
-		% urlDecode(message);
+	requestData << "apiToken=" << API_TOKEN;
+	requestData << "&appToken=" << this->appToken;
+	requestData << "&app=" << APP_PACKAGE;
+	requestData << "&deviceID=" << id;
+	requestData << "&type=" << "MESSAGE";
+	requestData << "&content=" << urlDecode(message);
 
 	// network request
 	string readBuffer;
@@ -229,11 +226,10 @@ void PushHandler::sendToDevice(int id, string message)
 	stringstream jsonData;
 	jsonData << readBuffer;
 
-	boost::property_tree::ptree pt;
-	boost::property_tree::read_json(jsonData, pt);
+	json j;
+	j << jsonData;
 
-
-	switch(pt.get<int>("code"))
+	switch(j["code"].get<int>())
 	{
 	case 0: //return 0;
 	break;
