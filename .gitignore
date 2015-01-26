@@ -1,9 +1,4 @@
 pusher
 *~
 *.o
-*.txt
 *.deb
-*cmake*
-*cpack*
-CMake*
-_CPack*
