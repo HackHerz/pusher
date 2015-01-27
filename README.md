@@ -27,6 +27,8 @@ $ make install
 
 ## Usage
 
+If you want some real life use cases make sure to check out our [example section](https://github.com/hackherz/pusher/examples/).
+
 ### Basic usage
 ```bash
 $ pusher -i 1 "Hello World"    # Send Hello World to device-id 1 
