@@ -27,7 +27,7 @@ $ make install
 
 ## Usage
 
-If you want some real life use cases make sure to check out our [example section](https://github.com/hackherz/pusher/examples/).
+If you want some real life use cases make sure to check out our [example section](https://github.com/HackHerz/pusher/tree/master/examples).
 
 ### Basic usage
 ```bash
