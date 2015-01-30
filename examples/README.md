@@ -5,4 +5,4 @@ This is a collection of examples how you can user pusher. Feel free to contact m
 
 ## Server
 
-- [Notification on SSH login](https://github.com/hackherz/pusher/examples/ssh-notification.md)
+- [Notification on SSH login](https://github.com/HackHerz/pusher/blob/master/examples/ssh-notification.md)
