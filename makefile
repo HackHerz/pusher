@@ -13,16 +13,8 @@ LIBS = -lcurl
 # Build
 all: pusher
 
-pusher: json simpleini pushhandler main
-	$(BUILDCOMMAND) src/json/json.o src/simpleini/ConvertUTF.o src/pushhandler.o src/main.o $(LIBS) -o $(TARGET)
-
-
-# json library
-.PHONY: json
-json: src/json/json.o
-
-src/json/json.o: src/json/json.cc
-	$(BUILDCOMMAND) -c src/json/json.cc -o src/json/json.o
+pusher: simpleini pushhandler main
+	$(BUILDCOMMAND) src/simpleini/ConvertUTF.o src/pushhandler.o src/main.o $(LIBS) -o $(TARGET)
 
 
 # simpleini
@@ -53,7 +45,6 @@ src/main.o: src/main.cpp
 .PHONY: clean
 clean:
 	rm -f src/*.o
-	rm -f src/json/*.o
 	rm -f src/simpleini/*.o
 	rm -f $(TARGET)
 
