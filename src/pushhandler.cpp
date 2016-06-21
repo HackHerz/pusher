@@ -159,7 +159,7 @@ vector<PushHandler::Device> PushHandler::getDevices()
 		Device buf;
 
 		buf.title = element["title"].get<string>();
-		buf.id = element["id"].get<string>();
+		buf.id = to_string(element["id"].get<int>());
 		buf.model = element["model"].get<string>();
 
 		buffer.push_back(buf);

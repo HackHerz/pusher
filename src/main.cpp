@@ -192,7 +192,7 @@ int main(int argc, char **argv)
 				if(devices[i].id.length() > idLength) { idLength = devices[i].id.length(); }
 			}
 
-			cout 
+			cout
 				<< "ID\033[" << (idLength - 2 + 2) << "C"
 				<< "Title\033[" << (titleLength - 5 + 2) << "C"
 				<< "Model" << endl;
@@ -202,9 +202,9 @@ int main(int argc, char **argv)
 
 			for(unsigned int i = 0; i < devices.size(); i++)
 			{
-				cout 
+				cout
 					<< devices[i].id << "\033[" << (idLength - devices[i].id.length() + 2) << "C"
-					<< devices[i].title << "\033[" << (titleLength - devices[i].title.length() + 2) << "C" 
+					<< devices[i].title << "\033[" << (titleLength - devices[i].title.length() + 2) << "C"
 					<< devices[i].model << endl;
 			}
 
@@ -260,7 +260,7 @@ int main(int argc, char **argv)
 		cerr << "error: " << e.error() << " for arg " << e.argId() << endl;
 	}
 
-	
+
 	// errors thrown by pushhandler
 	catch(PusherError& e)
 	{
