@@ -1,81 +1,13 @@
 #include "pushhandler.h"
 #include "json/json.hpp"
-
+#include "curlhandler.h"
 
 #include <sstream>
 #include <algorithm>
-#include <curl/curl.h>
 
 
 using namespace std;
 using json = nlohmann::json;
-
-
-// urlDecode matches
-string matches[][2] = {
-	{"$", "%24"},
-	{"&", "%26"},
-	{"+", "%2B"},
-	{",", "%2C"},
-	{"/", "%2F"},
-	{":", "%3A"},
-	{";", "%3B"},
-	{"=", "%3D"},
-	{"?", "%3F"},
-	{"@", "%40"}
-};
-
-// needed for urlencoding
-string urlDecode(string url)
-{
-	for(unsigned int i = 0; i < (sizeof(matches)/sizeof(matches[0])); i++)
-	{
-		size_t start_pos = 0;
-		while((start_pos = url.find(matches[i][0], start_pos)) != string::npos)
-		{
-			url.replace(start_pos, matches[i][0].length(), matches[i][1]);
-			start_pos += matches[i][1].length();
-		}
-	}
-
-	return url;
-}
-
-
-// needed for handling curl output
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-	((std::string*)userp)->append((char*)contents, size * nmemb);
-	return size * nmemb;
-}
-
-
-// curl wrapper
-string curlHandler(string data, const char* url)
-{
-	CURL *curl;
-	CURLcode res;
-	string readBuffer;
-	curl = curl_easy_init();
-
-	if(curl)
-	{
-		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_USERAGENT, USER_AGENT); 
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-		res = curl_easy_perform(curl);
-		curl_easy_cleanup(curl);
-
-		if(res != CURLE_OK)
-		{
-			throw PusherError("Network Error");
-		}
-	}
-
-	return readBuffer;
-}
 
 
 // constructor only username
@@ -104,7 +36,7 @@ string PushHandler::login(string password)
 
 	// network request
 	string readBuffer;
-	readBuffer = curlHandler(requestData.str(), URL_PN_LOGIN);
+	readBuffer = CurlHandler::request(requestData.str(), URL_PN_LOGIN);
 
 	// json parsing
 	stringstream jsonData;
@@ -133,7 +65,7 @@ vector<PushHandler::Device> PushHandler::getDevices()
 
 	// network request
 	string readBuffer;
-	readBuffer = curlHandler(requestData.str(), URL_PN_GET_DEVICES);
+	readBuffer =CurlHandler::request(requestData.str(), URL_PN_GET_DEVICES);
 
 	// json parsing
 	stringstream jsonData;
@@ -180,7 +112,7 @@ bool PushHandler::verifyToken()
 
 	// network request
 	string readBuffer;
-	readBuffer = curlHandler(requestData.str(), URL_PN_CHECK_TOKEN);
+	readBuffer = CurlHandler::request(requestData.str(), URL_PN_CHECK_TOKEN);
 
 	// json parser
 	stringstream jsonData;
@@ -216,11 +148,11 @@ void PushHandler::sendToDevice(string id, string message)
 	requestData << "&app=" << APP_PACKAGE;
 	requestData << "&deviceID=" << id;
 	requestData << "&type=" << "MESSAGE";
-	requestData << "&content=" << urlDecode(message);
+	requestData << "&content=" << CurlHandler::urlDecode(message);
 
 	// network request
 	string readBuffer;
-	readBuffer = curlHandler(requestData.str(), URL_PN_SEND_TO_DEVICE);
+	readBuffer = CurlHandler::request(requestData.str(), URL_PN_SEND_TO_DEVICE);
 
 	// json parsing
 	stringstream jsonData;

@@ -1,6 +1,6 @@
 /*
  * pusher
- * (c) 2014-2015 Daniel Stein
+ * (c) 2014-2016 Daniel Stein
  * https://github.com/HackHerz/pusher
  *
  * TODO

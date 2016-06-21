@@ -13,8 +13,8 @@ LIBS = `pkg-config libcurl --cflags --libs`
 # Build
 all: pusher
 
-pusher: simpleini pushhandler main
-	$(BUILDCOMMAND) src/simpleini/ConvertUTF.o src/pushhandler.o src/main.o $(LIBS) -o $(TARGET)
+$(TARGET): simpleini curlhandler pushhandler main
+	$(BUILDCOMMAND) src/simpleini/ConvertUTF.o src/curlhandler.o src/pushhandler.o src/main.o $(LIBS) -o $(TARGET)
 
 
 # simpleini
@@ -23,6 +23,14 @@ simpleini: src/simpleini/ConvertUTF.o
 
 src/simpleini/ConvertUTF.o: src/simpleini/ConvertUTF.c
 	$(BUILDCOMMAND) -c src/simpleini/ConvertUTF.c -o src/simpleini/ConvertUTF.o
+
+
+# curlhandler
+.PHONY: curlhandler
+curlhandler: src/curlhandler.o
+
+src/curlhandler.o: src/curlhandler.cpp
+	$(BUILDCOMMAND) -c src/curlhandler.cpp -o src/curlhandler.o
 
 
 # pushhandler
