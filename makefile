@@ -6,7 +6,7 @@ INSTALL_DIR = /usr/local/bin
 CXX = g++
 CPPFLAGS = -std=c++11
 BUILDCOMMAND = $(CXX) $(CPPFLAGS)
-LIBS = -lcurl
+LIBS = `pkg-config libcurl --cflags --libs`
 
 
 #=============================================================================
