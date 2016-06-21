@@ -11,7 +11,6 @@
 
 #include <iostream>
 #include <string>
-#include <fstream>
 #include <sstream>
 #include <termios.h>
 #include <unistd.h>
@@ -79,6 +78,9 @@ int main(int argc, char **argv)
 		// Variables
 		string message;
 		int id;
+		CSimpleIniA iniReader;
+		iniReader.SetUnicode();
+
 
 		// Request token
 		if(tokenSwitch.getValue())
@@ -105,44 +107,32 @@ int main(int argc, char **argv)
 			token = buf.login(password);
 
 
-			// Write config
-			ofstream dat_aus;
-			dat_aus.open(CONFIG_FILE, ios_base::out);
+			// Build config
+			iniReader.SetValue("pusher", "username", username.c_str());
+			iniReader.SetValue("pusher", "appToken", token.c_str());
 
 			// Check if file is writable
-			if(!dat_aus.is_open())
+			if(iniReader.SaveFile(CONFIG_FILE) < 0)
 			{
 				cout << "Try running pusher as root or save the following in "
 					<< CONFIG_FILE << "\n" << endl;
 
 				// Data
-				cout << "[pusher]" << endl;
-				cout << "username=" << username << endl;
-				cout << "appToken=" << token << endl;
+				string strData;
+				iniReader.Save(strData);
+				cout << strData << endl;
 
 				return 1;
 			}
-			else
-			{
-				cout << "Success!" << endl;
-			}
 
-			// Data
-			dat_aus << "[pusher]\n";
-			dat_aus << "username=" << username << "\n";
-			dat_aus << "appToken=" << token;
 
-			dat_aus.close();
-
+			cout << "Success!" << endl;
 			return 0;
 		}
 
 
-		// Load conf and check if token is specified
-		CSimpleIniA iniReader;
-		iniReader.SetUnicode();
 
-		// Check if reading is possible
+		// Check if reading of config is possible
 		if(iniReader.LoadFile(CONFIG_FILE) < 0)
 		{
 			cout << "Error" << endl;
@@ -258,6 +248,7 @@ int main(int argc, char **argv)
 	catch (TCLAP::ArgException &e)
 	{
 		cerr << "error: " << e.error() << " for arg " << e.argId() << endl;
+		return 1;
 	}
 
 
@@ -265,6 +256,7 @@ int main(int argc, char **argv)
 	catch(PusherError& e)
 	{
 		cout << "Error: " << e.what() << endl;
+		return 1;
 	}
 
 
@@ -272,6 +264,7 @@ int main(int argc, char **argv)
 	catch(exception& e)
 	{
 		cout << "Some kind of error occured: " << e.what() << endl;
+		return 1;
 	}
 
 	return 0;
