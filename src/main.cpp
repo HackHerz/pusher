@@ -135,12 +135,17 @@ int main(int argc, char **argv)
 		// Check if reading of config is possible
 		if(iniReader.LoadFile(CONFIG_FILE) < 0)
 		{
-			cout << "Error" << endl;
-			return 1;
+			throw PusherError("You need to login first.");
 		}
 
-		string username = iniReader.GetValue("pusher", "username", NULL);
-		string appToken = iniReader.GetValue("pusher", "appToken", NULL);
+		string username = iniReader.GetValue("pusher", "username", "");
+		string appToken = iniReader.GetValue("pusher", "appToken", "");
+
+		if(username.empty() || appToken.empty())
+		{
+			throw PusherError("You need to login first.");
+		}
+
 
 
 		// Loading values
