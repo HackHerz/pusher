@@ -14,7 +14,7 @@ Send push-notifications to your phone from the command line. Uses [PushNotifier]
 
 Make sure you have **libcurl4-openssl-dev** installed.
 ```bash
-$ git clone https://github.com/HackHerz/pusher.git
+$ git clone --recursive https://github.com/HackHerz/pusher.git
 $ cd pusher/
 $ make
 $ make install
