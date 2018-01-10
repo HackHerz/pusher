@@ -6,3 +6,4 @@ This is a collection of examples how you can user pusher. Feel free to contact m
 ## Server
 
 - [Notification on SSH login](https://github.com/HackHerz/pusher/blob/master/examples/ssh-notification.md)
+- [Notification for fail2ban](https://github.com/HackHerz/pusher/blob/master/examples/fail2ban-notification.md)
