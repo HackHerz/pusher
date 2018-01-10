@@ -5,16 +5,18 @@ TARGET = pusher
 INSTALL_DIR = /usr/local/bin
 CXX = g++
 CPPFLAGS = -std=c++11
-BUILDCOMMAND = $(CXX) $(CPPFLAGS)
+CDEFS = -DAPI_TOKEN=\"8E7D8B2DDE7DDE7D6C3V52VB52VBD4DDETBTTTKFFB11\"
+CDEFS += -DAPP_PACKAGE=\"com.hackherz.pusher\"
+BUILDCOMMAND = $(CXX) $(CDEFS) $(CPPFLAGS)
 LIBS = `pkg-config libcurl --cflags --libs`
 
 
 #=============================================================================
 # Build
-all: pusher
+all: $(TARGET)
 
-$(TARGET): simpleini curlhandler pushhandler main
-	$(BUILDCOMMAND) src/simpleini/ConvertUTF.o src/curlhandler.o src/pushhandler.o src/main.o $(LIBS) -o $(TARGET)
+$(TARGET): simpleini pushnotifier main
+	$(BUILDCOMMAND) src/simpleini/ConvertUTF.o src/pushnotifier-sdk-cpp/pushnotifier.o src/main.o $(LIBS) -o $(TARGET)
 
 
 # simpleini
@@ -25,20 +27,12 @@ src/simpleini/ConvertUTF.o: src/simpleini/ConvertUTF.c
 	$(BUILDCOMMAND) -c src/simpleini/ConvertUTF.c -o src/simpleini/ConvertUTF.o
 
 
-# curlhandler
-.PHONY: curlhandler
-curlhandler: src/curlhandler.o
+# pushnotifier
+.PHONY: pushnotifier
+pushnotifier: src/pushnotifier-sdk-cpp/pushnotifier.o
 
-src/curlhandler.o: src/curlhandler.cpp
-	$(BUILDCOMMAND) -c src/curlhandler.cpp -o src/curlhandler.o
-
-
-# pushhandler
-.PHONY: pushhandler
-pushhandler: src/pushhandler.o
-
-src/pushhandler.o: src/pushhandler.cpp
-	$(BUILDCOMMAND) -c src/pushhandler.cpp -o src/pushhandler.o
+src/pushnotifier-sdk-cpp/pushnotifier.o: src/pushnotifier-sdk-cpp/PushNotifier.cpp
+	$(BUILDCOMMAND) -c src/pushnotifier-sdk-cpp/PushNotifier.cpp -o src/pushnotifier-sdk-cpp/pushnotifier.o
 
 
 # main
@@ -54,6 +48,7 @@ src/main.o: src/main.cpp
 clean:
 	rm -f src/*.o
 	rm -f src/simpleini/*.o
+	rm -f src/pushnotifier-sdk-cpp/pushnotifier.o
 	rm -f $(TARGET)
 
 

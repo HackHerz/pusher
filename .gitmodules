@@ -1,0 +1,6 @@
+[submodule "src/pushnotifier-sdk-cpp"]
+	path = src/pushnotifier-sdk-cpp
+	url = https://github.com/HackHerz/pushnotifier-sdk-cpp
+[submodule "src/simpleini"]
+	path = src/simpleini
+	url = https://github.com/brofield/simpleini

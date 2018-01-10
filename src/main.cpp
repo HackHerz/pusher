@@ -17,7 +17,7 @@
 
 #include "tclap/CmdLine.h"
 #include "simpleini/SimpleIni.h"
-#include "pushhandler.h"
+#include "pushnotifier-sdk-cpp/PushNotifier.h"
 
 #define CONFIG_FILE "/etc/pusher.conf"
 
@@ -56,14 +56,13 @@ int main(int argc, char **argv)
 		TCLAP::CmdLine cmd("Push notifications to your phone easily.", ' ', "0.3");
 
 		// Values
-		TCLAP::ValueArg<int> idArg("i","id","ID of the device.",false,0,"number");
+		TCLAP::ValueArg<string> idArg("i","id","ID of the device.",false,"0","string");
 		cmd.add(idArg);
 
 		// Switches
 		TCLAP::SwitchArg tokenSwitch("t", "token", "Request your token.", cmd, false);
 		TCLAP::SwitchArg listSwitch("l", "list", "List all your devices.", cmd, false);
 		TCLAP::SwitchArg pipeSwitch("p", "pipe", "Input via pipe.", cmd, false);
-		TCLAP::SwitchArg verifySwitch("v","verify","Checks if token is still valid.", cmd, false);
 
 
 		// add unlabeled argument
@@ -76,8 +75,7 @@ int main(int argc, char **argv)
 
 
 		// Variables
-		string message;
-		int id;
+		string message, id;
 		CSimpleIniA iniReader;
 		iniReader.SetUnicode();
 
@@ -85,7 +83,8 @@ int main(int argc, char **argv)
 		// Request token
 		if(tokenSwitch.getValue())
 		{
-			string username, password, token;
+			string username, password;
+			PushNotifier::AppToken token;
 
 			// Read username
 			cout << "Username: ";
@@ -103,13 +102,13 @@ int main(int argc, char **argv)
 			cout << endl;
 
 			// pusher instance
-			PushHandler buf(username);
-			token = buf.login(password);
+			PushNotifier buf;
+			token = buf.login(username, password);
 
 
 			// Build config
 			iniReader.SetValue("pusher", "username", username.c_str());
-			iniReader.SetValue("pusher", "appToken", token.c_str());
+			iniReader.SetValue("pusher", "appToken", token.token.c_str());
 
 			// Check if file is writable
 			if(iniReader.SaveFile(CONFIG_FILE) < 0)
@@ -135,7 +134,7 @@ int main(int argc, char **argv)
 		// Check if reading of config is possible
 		if(iniReader.LoadFile(CONFIG_FILE) < 0)
 		{
-			throw PusherError("You need to login first.");
+			throw runtime_error("You need to login first.");
 		}
 
 		string username = iniReader.GetValue("pusher", "username", "");
@@ -143,37 +142,20 @@ int main(int argc, char **argv)
 
 		if(username.empty() || appToken.empty())
 		{
-			throw PusherError("You need to login first.");
+			throw runtime_error("You need to login first.");
 		}
 
 
 
 		// Loading values
-		PushHandler pusherInstance(username, appToken);
-
-
-
-		// Verify token
-		if(verifySwitch.getValue())
-		{
-			if(pusherInstance.verifyToken())
-			{
-				cout << "appToken is valid" << endl;
-				return 0;
-			}
-			else
-			{
-				cout << "appToken is invalid" << endl;
-				return 1;
-			}
-		}
+		PushNotifier pusherInstance(username, appToken, 0);
 
 
 
 		// List devices
 		if(listSwitch.getValue())
 		{
-			vector<PushHandler::Device> devices;
+			vector<PushNotifier::Device> devices;
 			devices = pusherInstance.getDevices();
 
 			unsigned int titleLength = 5;
@@ -209,7 +191,7 @@ int main(int argc, char **argv)
 
 
 		// Device id
-		if(idArg.getValue() != 0)
+		if(sizeof(idArg) != 0)
 		{
 			id = idArg.getValue();
 		}
@@ -242,7 +224,7 @@ int main(int argc, char **argv)
 		stringstream stringID;
 		stringID << id;
 
-		pusherInstance.sendToDevice(stringID.str(), message);
+		pusherInstance.sendMessage(stringID.str(), message);
 	}
 
 
@@ -253,14 +235,6 @@ int main(int argc, char **argv)
 	catch (TCLAP::ArgException &e)
 	{
 		cerr << "error: " << e.error() << " for arg " << e.argId() << endl;
-		return 1;
-	}
-
-
-	// errors thrown by pushhandler
-	catch(PusherError& e)
-	{
-		cout << "Error: " << e.what() << endl;
 		return 1;
 	}
 
