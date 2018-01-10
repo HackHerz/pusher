@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 
 	try
 	{
-		TCLAP::CmdLine cmd("Push notifications to your phone easily.", ' ', "0.3");
+		TCLAP::CmdLine cmd("Push notifications to your phone easily.", ' ', "0.4");
 
 		// Values
 		TCLAP::ValueArg<string> idArg("i","id","ID of the device.",false,"0","string");
