@@ -1,4 +1,4 @@
-![Logo](httpsgithub.com/pusher/blob/master/pusher.png)
+![Logo](https://github.com/HackHerz/pusher/blob/master/pusher.png)
 
 # pusher
 Send push-notifications to your phone from the command line. Uses [PushNotifier](http://pushnotifier.de/) to receive notifications.
