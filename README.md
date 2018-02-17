@@ -1,4 +1,5 @@
 ![Logo](https://github.com/HackHerz/pusher/blob/master/pusher.png)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors)
 
 # pusher
 Send push-notifications to your phone from the command line. Uses [PushNotifier](http://pushnotifier.de/) to receive notifications.
@@ -70,3 +71,18 @@ pusher uses a few third party libraries.
 - [json](https://github.com/nlohmann/json) by [Niels Lohmann](http://nlohmann.me/)
 - [TCLAP](http://tclap.sourceforge.net/)
 - [simpleini](https://github.com/brofield/simpleini) by Brodie Thiesfield
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+| [<img src="https://avatars2.githubusercontent.com/u/159488?v=4" width="100px;"/><br /><sub><b>Niels Lohmann</b></sub>](http:/nlohmann.me)<br />[💻](https://github.com/hackherz/pusher/commits?author=nlohmann "Code") | [<img src="https://avatars1.githubusercontent.com/u/1824603?v=4" width="100px;"/><br /><sub><b>James Rose</b></sub>](http://jameserose.co.uk)<br />[📖](https://github.com/hackherz/pusher/commits?author=jamesterjim "Documentation") | [<img src="https://avatars1.githubusercontent.com/u/2885148?v=4" width="100px;"/><br /><sub><b>Daniel Stein</b></sub>](https://hackherz.com/)<br />[💻](https://github.com/hackherz/pusher/commits?author=HackHerz "Code") [📖](https://github.com/hackherz/pusher/commits?author=HackHerz "Documentation") |
+| :---: | :---: | :---: |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!

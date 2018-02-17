@@ -1,0 +1,39 @@
+{
+  "projectName": "pusher",
+  "projectOwner": "hackherz",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "nlohmann",
+      "name": "Niels Lohmann",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/159488?v=4",
+      "profile": "http:/nlohmann.me",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jamesterjim",
+      "name": "James Rose",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1824603?v=4",
+      "profile": "http://jameserose.co.uk",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "HackHerz",
+      "name": "Daniel Stein",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2885148?v=4",
+      "profile": "https://hackherz.com/",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    }
+  ]
+}
